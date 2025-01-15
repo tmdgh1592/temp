@@ -1,5 +1,5 @@
-package feature.noticeCategory.model
+package feature.profile.subscreen.noticeCategory.model
 
-sealed interface NoticeCategoryUiEvent {
-    data object NavigateToOnboarding : NoticeCategoryUiEvent
+enum class NoticeCategoryUiEvent {
+    REFRESH_COMPLETE
 }

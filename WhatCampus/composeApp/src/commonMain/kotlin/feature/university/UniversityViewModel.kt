@@ -64,7 +64,7 @@ class UniversityViewModel(
                 }
 
                 Response.Failure.NetworkError -> sendNetworkErrorEvent()
-                else -> _uiEvent.emit(UniversityUiEvent.UniversityLoadFailed)
+                else -> _uiEvent.emit(UniversityUiEvent.UNIVERSITY_LOAD_FAILED)
             }
         }
 
@@ -79,7 +79,7 @@ class UniversityViewModel(
                         )
                     }
 
-                    else -> _uiEvent.emit(UniversityUiEvent.UniversityLoadFailed)
+                    else -> _uiEvent.emit(UniversityUiEvent.UNIVERSITY_LOAD_FAILED)
                 }
             }
             .launchIn(viewModelScope)
@@ -133,7 +133,7 @@ class UniversityViewModel(
             )
 
             when (userCreateResponse) {
-                is Response.Success -> _uiEvent.emit(UniversityUiEvent.UserSaveSuccess)
+                is Response.Success -> _uiEvent.emit(UniversityUiEvent.USER_SAVE_SUCCESS)
                 Response.Failure.ClientError -> sendClientErrorEvent()
                 Response.Failure.ServerError -> sendServerErrorEvent()
                 Response.Failure.NetworkError -> sendNetworkErrorEvent()

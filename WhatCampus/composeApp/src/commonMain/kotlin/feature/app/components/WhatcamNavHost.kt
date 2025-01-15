@@ -106,12 +106,12 @@ private fun SharedFlow<UniversityUiEvent>.collectUniversityUiEvent(
     LaunchedEffect(this) {
         collectLatest { uiEvent ->
             when (uiEvent) {
-                is UniversityUiEvent.UniversityLoadFailed -> onShowSnackbar(
+                UniversityUiEvent.UNIVERSITY_LOAD_FAILED -> onShowSnackbar(
                     universityLoadFailedMessage,
                     null
                 )
 
-                is UniversityUiEvent.UserSaveSuccess -> {
+                UniversityUiEvent.USER_SAVE_SUCCESS -> {
                     onShowSnackbar(userSaveSuccessMessage, null)
                     navigator.navigateMain(popUpTargetRoute = MainRoute.OnboardingRoute)
                 }

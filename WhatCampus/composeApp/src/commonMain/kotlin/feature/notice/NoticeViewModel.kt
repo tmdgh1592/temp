@@ -9,12 +9,16 @@ import core.domain.usecase.GetAllBookmarkedNoticesUseCase
 import core.domain.usecase.GetNoticesByCategoryIdUseCase
 import core.model.NoticeCategory
 import core.model.Response
+import feature.notice.model.NoticeUiEvent
 import feature.notice.model.NoticeUiState
 import feature.notice.model.NoticeWithBookmark
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
@@ -29,12 +33,15 @@ import kotlinx.coroutines.flow.update
 class NoticeViewModel(
     noticeRepository: NoticeRepository,
     notificationRepository: NotificationRepository,
-    getNoticesByCategoryId: GetNoticesByCategoryIdUseCase,
     userRepository: UserRepository,
-    getAllBookmarkedNotices: GetAllBookmarkedNoticesUseCase,
+    private val getNoticesByCategoryId: GetNoticesByCategoryIdUseCase,
+    private val getAllBookmarkedNotices: GetAllBookmarkedNoticesUseCase,
 ) : CommonViewModel() {
     private val _uiState: MutableStateFlow<NoticeUiState> = MutableStateFlow(NoticeUiState())
     val uiState: StateFlow<NoticeUiState> = _uiState.asStateFlow()
+
+    private val _uiEvent: MutableSharedFlow<NoticeUiEvent> = MutableSharedFlow()
+    val uiEvent: SharedFlow<NoticeUiEvent> = _uiEvent.asSharedFlow()
 
     init {
         userRepository.flowUser()
@@ -67,6 +74,10 @@ class NoticeViewModel(
             }
             .launchIn(viewModelScope)
 
+
+    }
+
+    fun fetchNotices() {
         uiState
             .flatMapLatest { state ->
                 val universityId = state.user?.universityId ?: return@flatMapLatest emptyFlow()
@@ -100,6 +111,7 @@ class NoticeViewModel(
                     is Response.Failure.NetworkError -> sendNetworkErrorEvent()
                     is Response.Failure.OtherError<*> -> sendOtherErrorEvent()
                 }
+                _uiEvent.emit(NoticeUiEvent.REFRESH_COMPLETE)
             }
             .launchIn(viewModelScope)
     }
